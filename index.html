@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crypto Bot Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>🤖 Crypto Trading Bot Dashboard</h1>
+
+  <div id="auth">
+    <h2>🔐 User Authentication</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <h2>📈 Market Data</h2>
+    <select id="symbol" onchange="fetchPrice()">
+      <option value="BTCUSDT">BTC/USDT</option>
+      <option value="ETHUSDT">ETH/USDT</option>
+      <option value="BNBUSDT">BNB/USDT</option>
+    </select>
+    <p id="price">Latest Price: --</p>
+
+    <h2>💼 Portfolio Tracker</h2>
+    <input type="number" id="btc" placeholder="BTC amount">
+    <input type="number" id="eth" placeholder="ETH amount">
+    <input type="number" id="bnb" placeholder="BNB amount">
+    <button onclick="calcPortfolio()">Calculate Value</button>
+    <p id="portfolio">Total Value: -- USDT</p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
