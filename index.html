@@ -7,6 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <!-- Sidebar for authentication -->
   <div class="sidebar">
     <h2>🔐 User Authentication</h2>
     <select id="menu">
@@ -18,6 +19,7 @@
     <button onclick="login()">Login</button>
   </div>
 
+  <!-- Main dashboard -->
   <div class="main">
     <h1>🤖 Crypto Trading Bot Dashboard</h1>
 
@@ -26,6 +28,13 @@
       <option value="BTCUSDT">BTC/USDT</option>
       <option value="ETHUSDT">ETH/USDT</option>
       <option value="BNBUSDT">BNB/USDT</option>
+    </select>
+    <select id="timeframe" onchange="fetchData()">
+      <option value="1h">1 Hour</option>
+      <option value="1d">1 Day</option>
+      <option value="1w">1 Week</option>
+      <option value="1M">1 Month</option>
+      <option value="1y">1 Year</option>
     </select>
     <p id="price">Latest Price: --</p>
     <canvas id="chart" width="600" height="300"></canvas>
