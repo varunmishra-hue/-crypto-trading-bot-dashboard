@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Crypto Bot Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <h1>🤖 Crypto Trading Bot Dashboard</h1>
@@ -18,12 +19,13 @@
 
   <div id="dashboard" style="display:none;">
     <h2>📈 Market Data</h2>
-    <select id="symbol" onchange="fetchPrice()">
+    <select id="symbol" onchange="fetchData()">
       <option value="BTCUSDT">BTC/USDT</option>
       <option value="ETHUSDT">ETH/USDT</option>
       <option value="BNBUSDT">BNB/USDT</option>
     </select>
     <p id="price">Latest Price: --</p>
+    <canvas id="chart" width="600" height="300"></canvas>
 
     <h2>💼 Portfolio Tracker</h2>
     <input type="number" id="btc" placeholder="BTC amount">
@@ -31,6 +33,14 @@
     <input type="number" id="bnb" placeholder="BNB amount">
     <button onclick="calcPortfolio()">Calculate Value</button>
     <p id="portfolio">Total Value: -- USDT</p>
+
+    <h2>💵 Real Trading (Simulation)</h2>
+    <select id="tradeAction">
+      <option value="BUY">Buy</option>
+      <option value="SELL">Sell</option>
+    </select>
+    <button onclick="placeOrder()">Execute Trade</button>
+    <p id="tradeResult">No trades yet.</p>
   </div>
 
   <script src="script.js"></script>
