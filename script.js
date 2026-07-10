@@ -1,28 +1,80 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: url("https://images.unsplash.com/photo-1446776811953-b23d57bd21aa") no-repeat center center fixed;
-  background-size: cover;
-  color: #00FFCC;
-  text-shadow: 2px 2px 4px #000;
+let trades = [];
+let alertPrice = 0;
+
+function login() {
+  let user = document.getElementById("username").value;
+  alert("Welcome " + user + "! You are now logged in.");
 }
 
-.sidebar {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 250px;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  padding: 20px;
-  color: #FFD700;
+async function fetchData() {
+  let symbol = document.getElementById("symbol").value;
+  let res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1w&limit=52`);
+  let data = await res.json();
+
+  let prices = data.map(d => parseFloat(d[4]));
+  let labels = data.map((d,i) => "Week " + (i+1));
+
+  document.getElementById("price").innerText = `Latest Price: ${prices[prices.length-1]} USDT`;
+
+  let ctx = document.getElementById("chart").getContext("2d");
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: `${symbol} Close Price`,
+        data: prices,
+        borderColor: 'gold',
+        backgroundColor: 'rgba(255,215,0,0.2)',
+        fill: true
+      }]
+    }
+  });
 }
 
-.main {
-  margin-left: 270px;
-  padding: 20px;
+async function calcPortfolio() {
+  let btc = parseFloat(document.getElementById("btc").value) || 0;
+  let eth = parseFloat(document.getElementById("eth").value) || 0;
+  let bnb = parseFloat(document.getElementById("bnb").value) || 0;
+
+  let btcPrice = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT`).then(r=>r.json());
+  let ethPrice = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT`).then(r=>r.json());
+  let bnbPrice = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=BNBUSDT`).then(r=>r.json());
+
+  let total = btc*btcPrice.price + eth*ethPrice.price + bnb*bnbPrice.price;
+  document.getElementById("portfolio").innerText = `Total Value: ${total.toFixed(2)} USDT`;
 }
 
-h1, h2 {
-  color: #FFD700;
+function depositINR() {
+  let amount = parseFloat(document.getElementById("deposit").value);
+  let method = document.getElementById("payment").value;
+  if(amount > 0) {
+    document.getElementById("depositResult").innerText = `✅ Payment of ₹${amount} via ${method} successful. Wallet credited.`;
+    trades.push({symbol:"INR", side:"DEPOSIT", amount, price:1, status:"Order Confirmed"});
+    updateTradeTable();
+  }
+}
+
+function setAlert() {
+  alertPrice = parseFloat(document.getElementById("alertPrice").value);
+  document.getElementById("alertResult").innerText = `Alert set at ${alertPrice} USDT`;
+}
+
+async function placeOrder() {
+  let action = document.getElementById("tradeAction").value;
+  let symbol = document.getElementById("symbol").value;
+  if(action === "None") return;
+
+  let priceData = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`).then(r=>r.json());
+  let price = priceData.price;
+  trades.push({symbol, side:action, amount:1, price, status:"Order Confirmed"});
+  updateTradeTable();
+}
+
+function updateTradeTable() {
+  let table = document.getElementById("tradeTable");
+  table.innerHTML = "<tr><th>Symbol</th><th>Side</th><th>Amount</th><th>Price</th><th>Status</th></tr>";
+  trades.forEach(t => {
+    table.innerHTML += `<tr><td>${t.symbol}</td><td>${t.side}</td><td>${t.amount}</td><td>${t.price}</td><td>${t.status}</td></tr>`;
+  });
 }
