@@ -37,8 +37,8 @@ async function fetchData() {
       datasets: [{
         label: `${symbol} Close Price (${timeframe})`,
         data: prices,
-        borderColor: '#FFD700',
-        backgroundColor: 'rgba(255,215,0,0.2)',
+        borderColor: '#000000',              // black line
+        backgroundColor: 'rgba(0,0,0,0.3)',  // semi-transparent black fill
         fill: true
       }]
     },
@@ -83,9 +83,10 @@ async function calcPortfolio() {
 function depositINR() {
   let amount = parseFloat(document.getElementById("deposit").value);
   let method = document.getElementById("payment").value;
+  let user = document.getElementById("username").value || "Guest";
   if(amount > 0) {
     document.getElementById("depositResult").innerText = `✅ Payment of ₹${amount} via ${method} successful. Wallet credited.`;
-    trades.push({symbol:"INR", side:"DEPOSIT", amount, price:1, status:"Order Confirmed"});
+    trades.push({name:user, symbol:"INR", side:"DEPOSIT", amount, price:1, status:"Order Confirmed"});
     updateTradeTable();
   }
 }
@@ -98,13 +99,19 @@ function setAlert() {
 async function placeOrder() {
   let action = document.getElementById("tradeAction").value;
   let symbol = document.getElementById("symbol").value;
+  let user = document.getElementById("username").value || "Guest";
   if(action === "None") return;
 
   let priceData = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`).then(r=>r.json());
   let price = priceData.price;
-  trades.push({symbol, side:action, amount:1, price, status:"Order Confirmed"});
+  trades.push({name:user, symbol, side:action, amount:1, price, status:"Order Confirmed"});
   updateTradeTable();
 }
 
 function updateTradeTable() {
-  let table = document.getElementBy
+  let table = document.getElementById("tradeTable");
+  table.innerHTML = "<tr><th>Name</th><th>Symbol</th><th>Side</th><th>Amount</th><th>Price</th><th>Status</th></tr>";
+  trades.forEach(t => {
+    table.innerHTML += `<tr><td>${t.name}</td><td>${t.symbol}</td><td>${t.side}</td><td>${t.amount}</td><td>${t.price}</td><td>${t.status}</td></tr>`;
+  });
+}
