@@ -1,4 +1,4 @@
-// Simple fake auth (localStorage)
+// Fake auth using localStorage
 function register() {
   let user = document.getElementById("username").value;
   let pass = document.getElementById("password").value;
@@ -22,12 +22,31 @@ function login() {
   }
 }
 
-// Fetch live crypto price from Binance API
-async function fetchPrice() {
+// Fetch OHLCV data from Binance and plot chart
+async function fetchData() {
   let symbol = document.getElementById("symbol").value;
-  let res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+  let res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1w&limit=52`);
   let data = await res.json();
-  document.getElementById("price").innerText = `Latest Price: ${data.price} USDT`;
+
+  let prices = data.map(d => parseFloat(d[4])); // close prices
+  let labels = data.map((d,i) => "Week " + (i+1));
+
+  document.getElementById("price").innerText = `Latest Price: ${prices[prices.length-1]} USDT`;
+
+  let ctx = document.getElementById("chart").getContext("2d");
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: `${symbol} Close Price`,
+        data: prices,
+        borderColor: 'gold',
+        backgroundColor: 'rgba(255,215,0,0.2)',
+        fill: true
+      }]
+    }
+  });
 }
 
 // Portfolio calculation
@@ -42,4 +61,10 @@ async function calcPortfolio() {
 
   let total = btc*btcPrice.price + eth*ethPrice.price + bnb*bnbPrice.price;
   document.getElementById("portfolio").innerText = `Total Value: ${total.toFixed(2)} USDT`;
+}
+
+// Simulated trading
+function placeOrder() {
+  let action = document.getElementById("tradeAction").value;
+  document.getElementById("tradeResult").innerText = `✅ ${action} order executed (simulation).`;
 }
